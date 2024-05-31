@@ -1,6 +1,6 @@
 // src/Header.js
 import React from 'react';
-import headerImage from '../Screenshot from 2024-02-14 16-02-32.png';
+import headerImage from '../Screenshot from 2024-02-06 12-26-21.png';
 import logoImage from '../logo-javascript@2x.png';
 import './Header.css';
 
@@ -29,7 +29,7 @@ const Header = () => {
             </div> 
               <div className="d-flex ps-3 align-items-center">
                 <div className="flex-grow-1">
-                  <h4>Create Agile Stories</h4>
+                  <h4>TIC TAC TOE</h4>
                 </div>
               </div>
             </div>

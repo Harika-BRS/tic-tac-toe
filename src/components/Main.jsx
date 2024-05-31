@@ -1,207 +1,113 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import image1 from '../crs.png';
+import image2 from '../cr.png';
 import './Main.css';
 
-const Main = () => {
-  const [storyList, setStoryList] = useState([]);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
-  const [priority, setPriority] = useState('');
-  const [descLength, setDescLength] = useState(100);
-  const maxLength = 100;
-  const warnLength = 10;
+function TicTacToe() {
+  const [playerOneName, setPlayerOneName] = useState('');
+  const [playerTwoName, setPlayerTwoName] = useState('');
+  const [circleTurn, setCircleTurn] = useState(false);
+  const [winningMessage, setWinningMessage] = useState('');
+  const [gameBoardVisible, setGameBoardVisible] = useState(false);
+  const [gameBoard, setGameBoard] = useState(Array(9).fill(''));
 
-  useEffect(() => {
-    const list = JSON.parse(localStorage.getItem('storyList')) || [];
-    setStoryList(list);
-  }, []);
+  const WIN_POSSIBILITY_ARR = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
 
-  const updateStore = (list) => {
-    localStorage.setItem('storyList', JSON.stringify(list));
+  const handleInputChange = (e, player) => {
+    const value = e.target.value;
+    player === 'one' ? setPlayerOneName(value) : setPlayerTwoName(value);
   };
 
-  const updateList = (newStory = null, updatedList = null) => {
-    let updatedStoryList = [...storyList];
-    if (newStory) updatedStoryList = [...updatedStoryList, newStory];
-    if (updatedList) updatedStoryList = updatedList;
-
-    setStoryList(updatedStoryList);
-    updateStore(updatedStoryList);
-  };
-
-  const formValidate = (e) => {
-    e.preventDefault();
-    if (title === '' || title.length < 5) {
-      alert('Task title should be at least 5 characters');
+  const startGame = () => {
+    if (!playerOneName) {
+      alert('Please enter player 1 name');
       return;
     }
-    if (description === '' || description.length < 60) {
-      alert('Description should be at least 60 characters');
+    if (!playerTwoName) {
+      alert('Please enter player 2 name');
       return;
     }
-    if (assignedTo === '') {
-      alert('Please select assigned to');
-      return;
-    }
-    if (priority === '') {
-      alert('Please select priority');
-      return;
-    }
-
-    const newStory = {
-      id: 'id' + Math.random().toString(16).slice(2),
-      description,
-      title,
-      assignedTo,
-      priority,
-      storyStatus: 'open',
-    };
-
-    setTitle('');
-    setDescription('');
-    setAssignedTo('');
-    setPriority('');
-    setDescLength(maxLength);
-
-    updateList(newStory);
+    setGameBoard(Array(9).fill(''));
+    setGameBoardVisible(true); // Show the game board
   };
 
-  const closeStory = (storyId) => {
-    const updatedList = storyList.map((story) =>
-      story.id === storyId ? { ...story, storyStatus: 'closed' } : story
-    );
-    updateList(null, updatedList);
-  };
+  const handleBoardCellClick = (index) => {
+    if (gameBoard[index] !== '' || winningMessage) return;
 
-  const deleteStory = (storyId) => {
-    const updatedList = storyList.filter((story) => story.id !== storyId);
-    updateList(null, updatedList);
-  };
+    const newBoard = [...gameBoard];
+    newBoard[index] = circleTurn ? 'O' : 'X';
+    setGameBoard(newBoard);
 
-  const textCounter = (e) => {
-    const count = e.target.value.length;
-    setDescLength(maxLength - count);
-    if (count > maxLength) {
-      setDescription(description.substring(0, maxLength));
+    if (checkWinStatus(newBoard, circleTurn ? 'O' : 'X')) {
+      setWinningMessage(`${circleTurn ? playerTwoName : playerOneName} is the winner!`);
+    } else if (gameDrawStatus(newBoard)) {
+      setWinningMessage('It\'s a draw!');
     } else {
-      setDescription(e.target.value);
+      setCircleTurn(!circleTurn);
     }
+  };
+
+  const checkWinStatus = (board, currentClass) => {
+    return WIN_POSSIBILITY_ARR.some(combination =>
+      combination.every(index => board[index] === currentClass)
+    );
+  };
+
+  const gameDrawStatus = (board) => {
+    return board.every(cell => cell !== '');
+  };
+  const resetGame = () => {
+    setPlayerOneName('');
+    setPlayerTwoName('');
+    setCircleTurn(false);
+    setWinningMessage('');
+    setGameBoardVisible(false);
   };
 
   return (
-    <main role="main" className="container pt-5 pb-5">
-      <section>
-        <h2 className="display-6 pb-2">Create Agile Story</h2>
-        <form onSubmit={formValidate}>
-          <div className="mb-3">
-            <label htmlFor="title" className="form-label">Task Title</label>
-            <input
-              type="text"
-              className="form-control"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter task title"
-            />
+    <main role="main" className="container pt-5">
+        <div className="form-group">
+          <div className="form-item d-flex">
+            <input type="text" placeholder="player one name" value={playerOneName} onChange={(e) => handleInputChange(e, 'one')} autoComplete="off" className="form-control" />
+            <img className="game-icon" src={image1} alt="cross-icon" />
           </div>
-          <br/>
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">Task Description</label>
-            <textarea
-              className="form-control"
-              cols="80"
-              rows="3"
-              placeholder="Enter task description"
-              id="description"
-              value={description}
-              onChange={textCounter}
-            ></textarea>
-            <div id="descLength" className={`form-text ${descLength <= warnLength ? 'text-danger' : ''}`}>
-              {descLength} characters left
-            </div>
+          <div className="form-item d-flex">
+            <input type="text" placeholder="player two name" value={playerTwoName} onChange={(e) => handleInputChange(e, 'two')} autoComplete="off" className="form-control" />
+            <img className="game-icon" src={image2} alt="nought-icon" />
           </div>
-          <br/>
-          <div className="mb-3">
-            <label htmlFor="assignedto" className="form-label">Assigned To</label>
-            <br/>
-            <select
-              className="form-select"
-              id="assignedto"
-              value={assignedTo}
-              onChange={(e) => setAssignedTo(e.target.value)}
-            >
-              <option value="" disabled="disabled">Select assigned to</option>
-              <br/>
-              <option value="Edwin">Edwin</option>
-              <option value="Tom">Tom</option>
-              <option value="Carl">Carl</option>
-              <option value="Jerome">Jerome</option>
-              <option value="Carmelo">Carmelo</option>
-            </select>
-          </div>
-            <br/>
-          <div className="mb-3">
-            <label htmlFor="priority" className="form-label">Priority</label>
-            <br/>
-            <select
-              className="form-select"
-              id="priority"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-            >
-              <option value="" disabled="disabled">Select priority</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
-            </select>
-          </div>
-          <br/>
-          <button type="submit" className="btn btn-primary" id="storySubmitBtn">
-            Create Agile Story
-          </button>
-        </form>
-        <br/>
-        <br/>
-      </section>
-      <section className="pt-5">
-        <div id="storyCardList" className="row g-2">
-          {storyList.length > 0 ? (
-            storyList.map((story) => (
-              <div id={story.id} key={story.id} className="col-12">
-                <div className="card">
-                    <h5 className="card-title d-flex justify-content-between align-items-center">
-                      {story.storyStatus === 'open' ? 'Open' : 'Closed'}
-                      <div>
-                        <button
-                          className="btn btn-primary btn-sm me-2"
-                          onClick={() => closeStory(story.id)}
-                        >
-                          Close
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => deleteStory(story.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </h5>
-                    <p className="card-text"><strong>Assigned to:</strong> {story.assignedTo}</p>
-                    <p className="card-text"><strong>Priority:</strong> {story.priority}</p>
-                    <p className="card-text"><strong>Title:</strong> {story.title}</p>
-                    <p className="card-text"><strong>Description:</strong> {story.description}</p>
-                  </div>
-                </div>
-            ))
-          ) : (
-            <div className="col-12">
-              <p className="alert alert-warning">No stories available. Please add some stories.</p>
-            </div>
-          )}
         </div>
-      </section>
+        <div className="btn-container">
+            <button className="btn btn-lg btn-secondary" onClick={startGame}>Start Game</button>
+        </div>
+     
+
+      {gameBoardVisible && (
+        <section id="tic-tac-toe">
+          <div className="game-board">
+            {gameBoard.map((cell, index) => (
+              <div key={index} className="cell" onClick={() => handleBoardCellClick(index)}>
+                {cell === 'X' && <img src={image1} alt="cross-icon" />}
+                {cell === 'O' && <img src={image2}alt="nought-icon" />}
+              </div>
+            ))}
+          </div>
+          <div className={`winning-message ${winningMessage && 'show'}`}>
+            <div>{winningMessage}</div>
+            <button className="btn btn-lg btn-secondary" onClick={resetGame}>Reset</button>
+          </div>
+        </section>
+      )}
     </main>
   );
-};
+}
 
-export default Main;
+export default TicTacToe;

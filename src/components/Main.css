@@ -1,57 +1,107 @@
-/* src/Main.css */
-.container {
-    max-width: 960px;
-    height: 465px;
-    margin: auto;
-    text-align: start;
+#tic-tac-toe {
+    margin-top: 150px;
+    margin-bottom: 150px;
+    display: flex;
+    justify-content: center;
   }
   
-  .form-text {
-    font-size: 0.875em;
+  .game-icon {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
   }
   
-  .text-danger {
-    color: red;
+  .form-group {
+    display: flex;
+    justify-content: space-evenly;
   }
   
-  button{
-    background-color: rgb(68, 126, 233);
+  .form-item {
+    margin: 20px;
   }
-  .alert {
-    margin: 20px 0;
+  .form-group .form-item {
+    margin-right: 50px;
   }
   
-  /* Add the following CSS to Main.css */
-.card {
-  border: 1px solid #242323;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  padding: 15px;
-  height: 250px;
-  width: 450px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.card-body {
-  display: flex;
-  flex-direction: column;
-}
-
-.card-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.card-title .btn {
-  margin-left: 10px;
-}
-
-.card-text {
-  margin-bottom: 10px;
-}
-
-#descLength.text-danger {
-  color: red;
-}
+  .btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .game-board {
+    width: 500px;
+    height: 50px;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(3, auto);
+  }
+  
+  .cell {
+    width: 100px;
+    height: 100px;
+    border: 3px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .game-board.x .cell:not(.x):not(.circle):hover::after {
+    opacity: 0.2;
+  }
+  
+  .game-board.circle .cell:not(.x):not(.circle):hover::after {
+    opacity: 0.2;
+  }
+  
+  .cell.x,
+  .cell.circle {
+    cursor: not-allowed;
+  }
+  
+  .cell.x::after,
+  .game-board.x .cell:not(.x):not(.circle):hover::after {
+    content: url("../crs.png");
+    height: 50px;
+    width: 50px;
+  }
+  
+  .cell.circle::after,
+  .game-board.circle .cell:not(.x):not(.circle):hover::after {
+    content: url("../cr.png");
+    height: 50px;
+    width: 50px;
+  }
+  
+  .winning-message {
+    display: none;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(26, 25, 25, 0.9);
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 5rem;
+    flex-direction: column;
+  }
+  
+  .winning-message button {
+    cursor: pointer;
+  }
+  
+  .winning-message.show {
+    display: flex;
+  }
+  h1 {
+    text-align: center;
+    color: rgb(249, 127, 127);
+    background-color: bisque;
+    height: 50px;
+  }
